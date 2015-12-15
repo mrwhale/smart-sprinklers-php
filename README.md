@@ -10,3 +10,8 @@ This will, hopefully, monitor local weather data and combine with historical dat
 Commands will be send to the hardware controller via either mqtt or a RESTful API (haven't decided yet) 
 
 Check it out and help update my logic on deciding on the cycle. Other than opensprinkler I was unable to find anything else that would be suitable for my project
+## Weather data
+This project uses forecast.io as its weather source (could be updated to use mulitple sources, or different sources if the need arises) so uses a forecast.io API created by https://github.com/tobias-redmann called forecast.io.php https://github.com/tobias-redmann/forecast.io-php-api so good work there
+
+You can head over to forecast.io to signup to get a API key (for free!) to use with this project
+
