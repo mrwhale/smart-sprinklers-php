@@ -15,6 +15,7 @@ $units = "ca";
 /*
  * Push notification variables
  * Can add in other providers if needed, currently I use instapush
+ * My instapush event is called "TurnOn" and looks like this: Turning sprinklers on for {time} because {reason}
 */
 $ipappid = "";
 $ipappsecret = "";
@@ -37,8 +38,13 @@ function getweather($api_key,$latitude,$longitude,$units = "auto",$lang = "en") 
     $forecast = new ForecastIO($api_key, $units, $lang);
     //This is array holding CURRENT weather data i.e. weather right now
     $now = array();
+    $yesterday = array();
     //This holds today's, tomorrow's and the day after's weather data
     $twoday = array();
+    //create a timestamp of yestday, so we can retrieve its weather
+    $today = new DateTime("now");
+    $yesterdaytime = $today->sub(new DateInterval('P1D'))->getTimeStamp();
+    //echo $yesterday;
 
     //Get current conditions and give to array too
     $condition = $forecast->getCurrentConditions($latitude, $longitude);
@@ -87,6 +93,26 @@ function getweather($api_key,$latitude,$longitude,$units = "auto",$lang = "en") 
         $i++;
 
     }
+
+    //Get Yesterdays forecast
+    echo "\n Yesterdays conditions: \n";
+    $yesterdays = $forecast->getHistoricalConditions($latitude,$longitude,$yesterdaytime);
+    echo "Yesterday: " . $yesterdays->getMaxTemperature() . "\n";
+    echo "percent rain: " . $yesterdays->getPrecipitationProbability() . "\n";
+    echo "humidity: " . $yesterdays->getHumidity() . "\n";
+    echo "rain fall: " . $yesterdays->getPrecipitationIntensity();
+    $yesterday['temp'] =  $yesterdays->getMaxTemperature();
+    $yesterday['chancerain'] = $yesterdays->getPrecipitationProbability();
+    $yesterday['humidity'] = $yesterdays->getHumidity();
+    $yesterday['summary'] = $yesterdays->getSummary();
+    $yesterday['rainfall'] = $yesterdays->getPrecipitationIntensity();
+    //If precip probability > 0 then get precip type too
+    if($yesterday['chancerain'] > 0){
+        echo "Precip type: " . $yesterdays->PrecipitationType() . "\n";
+        $yesterdays['preciptype'] = $yesterdays->PrecipitationType();
+    }
+
+    //print_r($yesterdays);
     //return array with current, today, tomorrow, and day after temp/conditions
     return [$now,$twoday];
 }
